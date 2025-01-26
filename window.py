@@ -39,17 +39,10 @@ class DarkPurpleSoftUIWindow(QWidget):
 
         self.layout.addLayout(button_layout)
 
-        # Styled apply button
-        self.apply_button = QPushButton("Apply Resolution")
-        self.apply_button.setFont(QFont("Arial", 14))
-        self.add_shadow(self.apply_button, QColor(50, 50, 50))
-        self.apply_button.clicked.connect(self.apply_resolution)
-        self.layout.addWidget(self.apply_button)
-
         self.setLayout(self.layout)
 
-        # List of dropdowns
-        self.resolution_combos = []
+        # List of resolution widgets
+        self.resolution_widgets = []
         self.add_resolution_dropdown()
 
     def load_styles(self):
@@ -69,7 +62,8 @@ class DarkPurpleSoftUIWindow(QWidget):
         widget.setGraphicsEffect(shadow)
 
     def add_resolution_dropdown(self):
-        """Adds a new resolution dropdown."""
+        """Adds a new resolution dropdown with an apply button."""
+        resolution_box = QHBoxLayout()
         combo = QComboBox()
         combo.setFont(QFont("Arial", 12))
         combo.addItems([
@@ -83,17 +77,25 @@ class DarkPurpleSoftUIWindow(QWidget):
             "2560x1440",
             "3840x2160"
         ])
-        self.resolution_combos.append(combo)
-        self.resolution_layout.addWidget(combo)
+        
+        apply_button = QPushButton("Прийняти")
+        apply_button.setFont(QFont("Arial", 12))
+        apply_button.clicked.connect(lambda: self.apply_resolution(combo))
+        
+        resolution_box.addWidget(combo)
+        resolution_box.addWidget(apply_button)
+        
+        self.resolution_widgets.append((combo, apply_button))
+        self.resolution_layout.addLayout(resolution_box)
 
     def remove_resolution_dropdown(self):
         """Removes the last added resolution dropdown if at least one remains."""
-        if self.resolution_combos:
-            combo = self.resolution_combos.pop()
-            self.resolution_layout.removeWidget(combo)
-            combo.deleteLater()
+        if self.resolution_widgets:
+            combo, button = self.resolution_widgets.pop()
+            combo.setParent(None)
+            button.setParent(None)
 
-    def apply_resolution(self):
-        """Handle resolution change action."""
-        selected_resolutions = [combo.currentText() for combo in self.resolution_combos]
-        print(f"Selected resolutions: {', '.join(selected_resolutions)}")
+    def apply_resolution(self, combo):
+        """Handles applying a selected resolution."""
+        selected_resolution = combo.currentText()
+        print(f"Selected resolution: {selected_resolution}")
