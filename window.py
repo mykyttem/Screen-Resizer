@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGraphicsDropShadowEffect, QComboBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGraphicsDropShadowEffect, QComboBox, QHBoxLayout
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtCore import Qt
 
@@ -12,55 +12,45 @@ class DarkPurpleSoftUIWindow(QWidget):
         self.load_styles()
 
         # Main layout
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
 
         # Styled title
         self.label = QLabel("Dark Purple Soft UI Design")
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setFont(QFont("Arial", 20, QFont.Bold))
         self.add_shadow(self.label, QColor(50, 50, 50))
-        layout.addWidget(self.label)
+        self.layout.addWidget(self.label)
 
-        # Dropdown for screen resolution 1
-        self.resolution_combo1 = QComboBox()
-        self.resolution_combo1.setFont(QFont("Arial", 12))
-        self.resolution_combo1.addItems([
-            "800x600",
-            "1024x768",
-            "1280x720",
-            "1366x768",
-            "1440x900",
-            "1600x900",
-            "1920x1080",
-            "2560x1440",
-            "3840x2160"
-        ])
-        layout.addWidget(self.resolution_combo1)
+        # Container for resolution dropdowns
+        self.resolution_layout = QVBoxLayout()
+        self.layout.addLayout(self.resolution_layout)
 
-        # Dropdown for screen resolution 2
-        self.resolution_combo2 = QComboBox()
-        self.resolution_combo2.setFont(QFont("Arial", 12))
-        self.resolution_combo2.addItems([
-            "800x600",
-            "1024x768",
-            "1280x720",
-            "1366x768",
-            "1440x900",
-            "1600x900",
-            "1920x1080",
-            "2560x1440",
-            "3840x2160"
-        ])
-        layout.addWidget(self.resolution_combo2)
+        # Add/Remove buttons
+        button_layout = QHBoxLayout()
+        self.add_button = QPushButton("Add Resolution")
+        self.add_button.setFont(QFont("Arial", 12))
+        self.add_button.clicked.connect(self.add_resolution_dropdown)
+        button_layout.addWidget(self.add_button)
 
-        # Styled button
-        self.button = QPushButton("Apply Resolution")
-        self.button.setFont(QFont("Arial", 14))
-        self.add_shadow(self.button, QColor(50, 50, 50))
-        self.button.clicked.connect(self.apply_resolution)
-        layout.addWidget(self.button)
+        self.remove_button = QPushButton("Remove Resolution")
+        self.remove_button.setFont(QFont("Arial", 12))
+        self.remove_button.clicked.connect(self.remove_resolution_dropdown)
+        button_layout.addWidget(self.remove_button)
 
-        self.setLayout(layout)
+        self.layout.addLayout(button_layout)
+
+        # Styled apply button
+        self.apply_button = QPushButton("Apply Resolution")
+        self.apply_button.setFont(QFont("Arial", 14))
+        self.add_shadow(self.apply_button, QColor(50, 50, 50))
+        self.apply_button.clicked.connect(self.apply_resolution)
+        self.layout.addWidget(self.apply_button)
+
+        self.setLayout(self.layout)
+
+        # List of dropdowns
+        self.resolution_combos = []
+        self.add_resolution_dropdown()
 
     def load_styles(self):
         """Load the styles from the external .qss file."""
@@ -78,8 +68,32 @@ class DarkPurpleSoftUIWindow(QWidget):
         shadow.setOffset(3, 3)
         widget.setGraphicsEffect(shadow)
 
+    def add_resolution_dropdown(self):
+        """Adds a new resolution dropdown."""
+        combo = QComboBox()
+        combo.setFont(QFont("Arial", 12))
+        combo.addItems([
+            "800x600",
+            "1024x768",
+            "1280x720",
+            "1366x768",
+            "1440x900",
+            "1600x900",
+            "1920x1080",
+            "2560x1440",
+            "3840x2160"
+        ])
+        self.resolution_combos.append(combo)
+        self.resolution_layout.addWidget(combo)
+
+    def remove_resolution_dropdown(self):
+        """Removes the last added resolution dropdown if at least one remains."""
+        if self.resolution_combos:
+            combo = self.resolution_combos.pop()
+            self.resolution_layout.removeWidget(combo)
+            combo.deleteLater()
+
     def apply_resolution(self):
         """Handle resolution change action."""
-        selected_resolution1 = self.resolution_combo1.currentText()
-        selected_resolution2 = self.resolution_combo2.currentText()
-        print(f"Selected resolutions: {selected_resolution1}, {selected_resolution2}")
+        selected_resolutions = [combo.currentText() for combo in self.resolution_combos]
+        print(f"Selected resolutions: {', '.join(selected_resolutions)}")
