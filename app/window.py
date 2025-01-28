@@ -6,18 +6,21 @@ import pywintypes
 import win32api
 import win32con
 
-from settings import ICON_TRAY, WINDOW_STYLES, FONTS_SET
+from settings import ICON, WINDOW_STYLES, FONTS_SET
 from items import LIST_RESIZES
 
 
-class DarkPurpleSoftUIWindow(QMainWindow):
+class WindowUI(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Dark Purple Soft UI Design")
+        self.setWindowTitle("Window resizer cyberpunk")
         self.setGeometry(200, 200, 500, 400)
-        self.setFixedSize(500, 400)
+        self.setFixedSize(600, 450)
         self.load_styles()
+
+        # set icon
+        self.setWindowIcon(QIcon(ICON))
 
         # Central widget
         self.central_widget = QWidget(self)
@@ -27,7 +30,7 @@ class DarkPurpleSoftUIWindow(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
 
         # Styled title
-        self.label = QLabel("Dark Purple Soft UI Design")
+        self.label = QLabel("Window resizer")
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setFont(QFont(FONTS_SET, 20, QFont.Bold))
         self.add_shadow(self.label, QColor(50, 50, 50))
@@ -59,7 +62,7 @@ class DarkPurpleSoftUIWindow(QMainWindow):
 
         # Add system tray functionality
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon(ICON_TRAY))
+        self.tray_icon.setIcon(QIcon(ICON))
         self.tray_icon.setVisible(True)
 
         tray_menu = QMenu(self)
