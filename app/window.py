@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGraphicsDropShadowEffect, QComboBox, QHBoxLayout
-from PyQt5.QtGui import QColor, QFont
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGraphicsDropShadowEffect, QComboBox, QHBoxLayout, QSystemTrayIcon, QMenu, QAction, QMainWindow
+from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtCore import Qt
 
 import pywintypes
@@ -7,7 +7,7 @@ import win32api
 import win32con
 
 
-class DarkPurpleSoftUIWindow(QWidget):
+class DarkPurpleSoftUIWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -15,8 +15,12 @@ class DarkPurpleSoftUIWindow(QWidget):
         self.setGeometry(200, 200, 500, 400)
         self.load_styles()
 
+        # Central widget
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
+
         # Main layout
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout(self.central_widget)
 
         # Styled title
         self.label = QLabel("Dark Purple Soft UI Design")
@@ -43,7 +47,31 @@ class DarkPurpleSoftUIWindow(QWidget):
 
         self.layout.addLayout(button_layout)
 
-        self.setLayout(self.layout)
+        # Button for minimizing to tray
+        self.minimize_button = QPushButton("Minimize to Tray")
+        self.minimize_button.setFont(QFont("Arial", 12))
+        self.minimize_button.clicked.connect(self.minimize_to_tray)
+        self.layout.addWidget(self.minimize_button)
+
+        # Add system tray functionality
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon("icon/tray.png"))
+        self.tray_icon.setVisible(True)
+
+        tray_menu = QMenu(self)
+        minimize_action = QAction("Minimize to Tray", self)
+        minimize_action.triggered.connect(self.minimize_to_tray)
+        tray_menu.addAction(minimize_action)
+
+        restore_action = QAction("Restore", self)
+        restore_action.triggered.connect(self.restore_window)
+        tray_menu.addAction(restore_action)
+
+        exit_action = QAction("Exit", self)
+        exit_action.triggered.connect(self.close)
+        tray_menu.addAction(exit_action)
+
+        self.tray_icon.setContextMenu(tray_menu)
 
         # List of resolution widgets
         self.resolution_widgets = []
@@ -83,7 +111,7 @@ class DarkPurpleSoftUIWindow(QWidget):
             "3840x2160"
         ])
         
-        apply_button = QPushButton("Прийняти")
+        apply_button = QPushButton("Apply")
         apply_button.setFont(QFont("Arial", 12))
         apply_button.clicked.connect(lambda: self.apply_resolution(combo))
         
@@ -106,7 +134,6 @@ class DarkPurpleSoftUIWindow(QWidget):
         width, height = map(int, selected_resolution.split("x"))
         self.change_screen_resolution(width, height)
 
-
     def change_screen_resolution(self, width, height):
         """Changes the screen resolution (Windows only)."""
         devmode = pywintypes.DEVMODEType()
@@ -115,3 +142,11 @@ class DarkPurpleSoftUIWindow(QWidget):
         devmode.Fields = win32con.DM_PELSWIDTH | win32con.DM_PELSHEIGHT
 
         win32api.ChangeDisplaySettings(devmode, win32con.CDS_FULLSCREEN)
+
+    def minimize_to_tray(self):
+        """Minimizes the window to the system tray."""
+        self.hide()
+
+    def restore_window(self):
+        """Restores the window from the tray."""
+        self.showNormal()
