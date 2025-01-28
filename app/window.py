@@ -6,6 +6,9 @@ import pywintypes
 import win32api
 import win32con
 
+from settings import ICON_TRAY, WINDOW_STYLES, FONTS_SET
+from items import LIST_RESIZES
+
 
 class DarkPurpleSoftUIWindow(QMainWindow):
     def __init__(self):
@@ -25,7 +28,7 @@ class DarkPurpleSoftUIWindow(QMainWindow):
         # Styled title
         self.label = QLabel("Dark Purple Soft UI Design")
         self.label.setAlignment(Qt.AlignCenter)
-        self.label.setFont(QFont("Arial", 20, QFont.Bold))
+        self.label.setFont(QFont(FONTS_SET, 20, QFont.Bold))
         self.add_shadow(self.label, QColor(50, 50, 50))
         self.layout.addWidget(self.label)
 
@@ -36,12 +39,12 @@ class DarkPurpleSoftUIWindow(QMainWindow):
         # Add/Remove buttons
         button_layout = QHBoxLayout()
         self.add_button = QPushButton("Add Resolution")
-        self.add_button.setFont(QFont("Arial", 12))
+        self.add_button.setFont(QFont(FONTS_SET, 12))
         self.add_button.clicked.connect(self.add_resolution_dropdown)
         button_layout.addWidget(self.add_button)
 
         self.remove_button = QPushButton("Remove Resolution")
-        self.remove_button.setFont(QFont("Arial", 12))
+        self.remove_button.setFont(QFont(FONTS_SET, 12))
         self.remove_button.clicked.connect(self.remove_resolution_dropdown)
         button_layout.addWidget(self.remove_button)
 
@@ -49,13 +52,13 @@ class DarkPurpleSoftUIWindow(QMainWindow):
 
         # Button for minimizing to tray
         self.minimize_button = QPushButton("Minimize to Tray")
-        self.minimize_button.setFont(QFont("Arial", 12))
+        self.minimize_button.setFont(QFont(FONTS_SET, 12))
         self.minimize_button.clicked.connect(self.minimize_to_tray)
         self.layout.addWidget(self.minimize_button)
 
         # Add system tray functionality
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(QIcon("icon/tray.png"))
+        self.tray_icon.setIcon(QIcon(ICON_TRAY))
         self.tray_icon.setVisible(True)
 
         tray_menu = QMenu(self)
@@ -80,7 +83,7 @@ class DarkPurpleSoftUIWindow(QMainWindow):
     def load_styles(self):
         """Load the styles from the external .qss file."""
         try:
-            with open("styles/styles.qss", "r") as f:
+            with open(WINDOW_STYLES, "r") as f:
                 self.setStyleSheet(f.read())
         except FileNotFoundError:
             print("styles.qss not found. Using default styles.")
@@ -97,22 +100,11 @@ class DarkPurpleSoftUIWindow(QMainWindow):
         """Adds a new resolution dropdown with an apply button."""
         resolution_box = QHBoxLayout()
         combo = QComboBox()
-        combo.setFont(QFont("Arial", 12))
-        combo.addItems([
-            "800x600",
-            "1024x768",
-            "1280x720",
-            "1280x1024",
-            "1366x768",
-            "1440x900",
-            "1600x900",
-            "1920x1080",
-            "2560x1440",
-            "3840x2160"
-        ])
+        combo.setFont(QFont(FONTS_SET, 12))
+        combo.addItems(LIST_RESIZES)
         
         apply_button = QPushButton("Apply")
-        apply_button.setFont(QFont("Arial", 12))
+        apply_button.setFont(QFont(FONTS_SET, 12))
         apply_button.clicked.connect(lambda: self.apply_resolution(combo))
         
         resolution_box.addWidget(combo)
