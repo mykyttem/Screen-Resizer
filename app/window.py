@@ -16,6 +16,7 @@ class DarkPurpleSoftUIWindow(QMainWindow):
 
         self.setWindowTitle("Dark Purple Soft UI Design")
         self.setGeometry(200, 200, 500, 400)
+        self.setFixedSize(500, 400)
         self.load_styles()
 
         # Central widget
