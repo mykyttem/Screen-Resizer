@@ -2,6 +2,10 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGraphics
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtCore import Qt
 
+import pywintypes
+import win32api
+import win32con
+
 
 class DarkPurpleSoftUIWindow(QWidget):
     def __init__(self):
@@ -70,6 +74,7 @@ class DarkPurpleSoftUIWindow(QWidget):
             "800x600",
             "1024x768",
             "1280x720",
+            "1280x1024",
             "1366x768",
             "1440x900",
             "1600x900",
@@ -98,4 +103,15 @@ class DarkPurpleSoftUIWindow(QWidget):
     def apply_resolution(self, combo):
         """Handles applying a selected resolution."""
         selected_resolution = combo.currentText()
-        print(f"Selected resolution: {selected_resolution}")
+        width, height = map(int, selected_resolution.split("x"))
+        self.change_screen_resolution(width, height)
+
+
+    def change_screen_resolution(self, width, height):
+        """Changes the screen resolution (Windows only)."""
+        devmode = pywintypes.DEVMODEType()
+        devmode.PelsWidth = width
+        devmode.PelsHeight = height
+        devmode.Fields = win32con.DM_PELSWIDTH | win32con.DM_PELSHEIGHT
+
+        win32api.ChangeDisplaySettings(devmode, win32con.CDS_FULLSCREEN)
