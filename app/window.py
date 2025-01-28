@@ -48,7 +48,7 @@ class DarkPurpleSoftUIWindow(QWidget):
     def load_styles(self):
         """Load the styles from the external .qss file."""
         try:
-            with open("styles.qss", "r") as f:
+            with open("styles/styles.qss", "r") as f:
                 self.setStyleSheet(f.read())
         except FileNotFoundError:
             print("styles.qss not found. Using default styles.")
