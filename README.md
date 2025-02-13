@@ -3,6 +3,7 @@ This project uses PyQt5 to create a GUI application that changes the screen reso
 
 ## Started
 ``` python -m venv venv ```
+
 ``` pip install -r requirements.txt ```
 
 ## Compile to exe
